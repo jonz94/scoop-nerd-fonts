@@ -1,0 +1,56 @@
+name: Auto update sarasa's version if a new version is avaliable
+
+on:
+  # on every 12 hours
+  schedule:
+    - cron: '0 */12 * * *'
+  # allow manually trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    if: github.repository == 'jonz94/scoop-nerd-fonts'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: Magic 😎
+        run: |
+          # Find the latest tag
+          LATEST_TAG=$(curl --silent https://api.github.com/repos/be5invis/Sarasa-Gothic/releases/latest | jq -r .tag_name)
+          echo Latest tag of be5invis/Sarasa-Gothic is ${LATEST_TAG}
+
+          # Check if we already have a matching tag
+          CURRENT_VERSION=$(jq -r .version bucket/SarasaGothic.json)
+          echo Current version is ${CURRENT_VERSION}
+          if [ ${LATEST_TAG:1} == ${CURRENT_VERSION} ]; then
+            echo ${LATEST_TAG} match current version ${CURRENT_VERSION}, do nothing.
+          else
+            echo ${LATEST_TAG} is newer than current version ${CURRENT_VERSION}, start auto updating...
+            OLD_VERSION=$(jq -r '.version' bucket/SarasaGothic.json)
+            NEW_VERSION=${LATEST_TAG:1}
+
+            echo Downloading Sarasa Gothic ttf ${LATEST_TAG}
+            curl -L -O https://github.com/be5invis/Sarasa-Gothic/releases/download/${LATEST_TAG}/sarasa-gothic-ttf-${LATEST_TAG:1}.7z
+            OLD_TTF_HASH=$(jq -r '.hash' bucket/SarasaGothic.json)
+            NEW_TTF_HASH=$(sha256sum sarasa-gothic-ttf-${LATEST_TAG:1}.7z | head -c 64)
+
+            echo Updating buckets using ttf
+            ls -1 bucket/Sarasa* | grep -v ttc | xargs sed -i "s/${OLD_VERSION}/${NEW_VERSION}/g; s/${OLD_TTF_HASH}/${NEW_TTF_HASH}/g"
+
+            echo Downloading Sarasa Gothic ttc ${LATEST_TAG}
+            curl -L -O https://github.com/be5invis/Sarasa-Gothic/releases/download/${LATEST_TAG}/sarasa-gothic-ttc-${LATEST_TAG:1}.7z
+            OLD_TTC_HASH=$(jq -r '.hash' bucket/SarasaGothic-ttc.json)
+            NEW_TTC_HASH=$(sha256sum sarasa-gothic-ttc-${LATEST_TAG:1}.7z | head -c 64)
+
+            echo Updating bucket using ttc
+            sed -i "s/${OLD_VERSION}/${NEW_VERSION}/g; s/${OLD_TTC_HASH}/${NEW_TTC_HASH}/g" bucket/SarasaGothic-ttc.json
+
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git add bucket/
+            git commit -m "SarasaGothic: Update to version ${NEW_VERSION}"
+            git push
+          fi
