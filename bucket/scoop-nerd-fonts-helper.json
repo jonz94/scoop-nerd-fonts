@@ -1,0 +1,15 @@
+{
+    "version": "2021-11-29T21-32-37Z",
+    "homepage": "https://github.com/jonz94/scoop-nerd-fonts",
+    "url": "https://raw.githubusercontent.com/jonz94/scoop-nerd-fonts/789cbfb0933067068ffecad1e754d86064f321ff/scoop-nerd-fonts-helper.ps1",
+    "hash": "1ee97f643ecc564a9c3cd2e2e0567fca250bef40109bbe97c0762557d4b1e5c8",
+    "bin": "scoop-nerd-fonts-helper.ps1",
+    "checkver": {
+        "url": "https://github.com/jonz94/scoop-nerd-fonts/commits/master/scoop-nerd-fonts-helper.ps1.atom",
+        "regex": "(?s)>(\\d+)-(\\d+)-(\\d+)T(\\d+):(\\d+):(\\d+)Z.*?/(?<sha>[0-9a-f]{40})",
+        "replace": "${1}-${2}-${3}T${4}-${5}-${6}Z"
+    },
+    "autoupdate": {
+        "url": "https://raw.githubusercontent.com/jonz94/scoop-nerd-fonts/$matchSha/scoop-nerd-fonts-helper.ps1"
+    }
+}
