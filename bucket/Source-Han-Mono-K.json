@@ -1,8 +1,9 @@
 {
     "##": "This package has to be updated manually since autoupdate does not support updating multiple urls.",
     "version": "1.002",
-    "license": "OFL-1.1",
     "homepage": "https://github.com/adobe-fonts/source-han-mono",
+    "license": "OFL-1.1",
+    "depends": "scoop-nerd-fonts-helper",
     "url": [
         "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-Bold.otf",
         "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-BoldIt.otf",
@@ -35,6 +36,24 @@
         "2931bfb8dc3fe0c09ea99de226dc9954c9b7d883876a45547edcb0852c51949e",
         "e75dae26a69a1c78fbd7945b9778b2585b375c359cdebdae91fe9001f045a643"
     ],
+    "installer": {
+        "script": [
+            "try {",
+            "    scoop-nerd-fonts-helper -Command install -Filter '*.otf'",
+            "} catch {",
+            "    abort($_, 1)",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "try {",
+            "    scoop-nerd-fonts-helper -Command uninstall -Filter '*.otf'",
+            "} catch {",
+            "    abort($_, 1)",
+            "}"
+        ]
+    },
     "checkver": "github",
     "autoupdate": {
         "url": [
@@ -52,47 +71,6 @@
             "https://github.com/adobe-fonts/source-han-mono/raw/master/Normal/OTC/SourceHanMonoK-NormalIt.otf",
             "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-Regular.otf",
             "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-RegularIt.otf"
-        ]
-    },
-    "installer": {
-        "script": [
-            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
-            "$windows1809BuildNumber = 17763",
-            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
-            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
-            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
-            "    error \"Administrator rights are required to install $app.\"",
-            "    exit 1",
-            "}",
-            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
-            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
-            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
-            "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
-            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
-            "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
-            "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
-            "    Copy-Item $_.FullName -Destination $fontInstallDir",
-            "}"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
-            "$windows1809BuildNumber = 17763",
-            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
-            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
-            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
-            "    error \"Administrator rights are required to uninstall $app.\"",
-            "    exit 1",
-            "}",
-            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
-            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
-            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
-            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
-            "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
-            "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
-            "}",
-            "Write-Host \"Font family 'Source Han Mono K' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
         ]
     }
 }
