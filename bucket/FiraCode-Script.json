@@ -1,5 +1,4 @@
 {
-    "##": "This package has to be updated manually since autoupdate does not support updating multiple urls.",
     "version": "0.0.28",
     "description": "A font mashup to be used in code editors. The Regular and Bold face styles are taken from Fira Code and Script12.",
     "homepage": "https://github.com/DanielAtKrypton/Fira-Code-Script",
@@ -55,5 +54,12 @@
             "Write-Host \"Font 'Fira Code Script' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
         ]
     },
-    "checkver": "github"
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/DanielAtKrypton/Fira-Code-Script/releases/download/v$version/FiraCodeScript-Bold.ttf",
+            "https://github.com/DanielAtKrypton/Fira-Code-Script/releases/download/v$version/FiraCodeScript-Italic.ttf",
+            "https://github.com/DanielAtKrypton/Fira-Code-Script/releases/download/v$version/FiraCodeScript-Regular.ttf"
+        ]
+    }
 }
